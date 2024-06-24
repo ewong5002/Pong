@@ -40,11 +40,10 @@ class Ball(pygame.Rect):
 	start_y = height/2
 	start_speed = 0.2
 
-	def __init__ (self, x, y, width, height, speed, auto_up, auto_left):
+	def __init__ (self, x, y, width, speed, auto_up, auto_left):
 		self.x = x
 		self.y = y
-		self.width = width
-		self.height = height
+		self.width = self.height = width
 		self.speed = speed
 		self.up = auto_up
 		self.left = auto_left
@@ -90,11 +89,11 @@ def computer_movement(player):
 		if player.y == (height - paddle_height):
 			player.auto = True
 
-def move_ball(ball):
-	move_ball_vertical(ball)
-	move_ball_horizontal(ball)
+def move_ball():
+	move_ball_vertical()
+	move_ball_horizontal()
 
-def move_ball_vertical(ball):
+def move_ball_vertical():
 	if ball.up:
 		ball.move_ip(0, -1)
 		ball.y -= 1
@@ -103,16 +102,14 @@ def move_ball_vertical(ball):
 	elif not ball.up:
 		ball.move_ip(0, 1)
 		ball.y += 1
-		if ball.y >= (height - ball_width):
+		if ball.y >= (height - ball.width):
 			ball.up = True
 
-def move_ball_horizontal(ball):
+def move_ball_horizontal():
 	if ball.left:
 		ball.move_ip(-1, 0)
-		ball.x -= ball.speed
 	elif not ball.left:
 		ball.move_ip(1, 0)
-		ball.x += ball.speed
 
 def collision():
 	if ball.colliderect(player1):
@@ -147,7 +144,7 @@ ball_width = 10
 # Creating Objects
 player1 = Paddle(50, y, paddle_width, paddle_height, True)
 player2 = Paddle(750, y, paddle_width, paddle_height, True)
-ball = Ball(x, y, ball_width, ball_width, 0.2, False, True)
+ball = Ball(x, y, ball_width, 0.2, True, True)
 score = Scoreboard(0, 0)
 
 # Game Loop Variable
@@ -156,7 +153,8 @@ run = True
 # Game Loop
 while run:
 
-	pygame.time.delay(10)
+	pygame.time.delay(7)
+	pygame.display.update()
 
 	# Visuals
 	screen.fill(black)
@@ -172,34 +170,44 @@ while run:
 	# Game Logic
 	movement(player1)
 	computer_movement(player2)
-	move_ball(ball)
-	collision()
+	move_ball()
+	#collision() 
+
+	if ball.colliderect(player1):
+		if key[pygame.K_s] == True:
+			ball.up = False
+			ball.left = False
+		elif key[pygame.K_w] == True:
+			ball.up = True
+			ball.left = False
+		else:
+			ball.left = False
 
 	# Ball Out-of-Bounds Check
 	if (ball.x <= 0):
 		reset_screen()
 		score.computerPoint()
-	elif (ball.x >= (width - ball_width)):
+	elif (ball.x >= (width - ball.width)):
 		reset_screen()
 		score.playerPoint()
 
 	# Game Completion Message
-	if (score.playerPoint() == 7):
-		victory_text = victory_font-render("Player 1 Wins!", False, white)
-		screen.blit(victory_text, (367, 200))
-		pygame.time.delay(5000)
+	if (int(f"{score}"[0]) == 7):
+		victory_text = victory_font.render("Player 1 Wins!", False, white)
+		screen.blit(victory_text, (225, 210))
+		pygame.display.update()
+		pygame.time.delay(3000)
 		run = False
-	elif (score.computerPoint() == 7):
-		victory_text = victory_font-render("Player 2 Wins!", False, white)
-		screen.blit(victory_text, (367, 200))
-		pygame.time.delay(5000)
+	elif (int(f"{score}"[4]) == 7):
+		victory_text = victory_font.render("Player 2 Wins!", False, white)
+		screen.blit(victory_text, (225, 210))
+		pygame.display.update()
+		pygame.time.delay(3000)
 		run = False
 		
 	# Exit Game
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
-	
-	pygame.display.update()
 
 pygame.quit()
