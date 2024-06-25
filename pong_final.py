@@ -2,20 +2,29 @@ import pygame
 
 pygame.init()
 
+# Screen variables
 height = 600
 width = 800
 
+# Fonts
+game_font = pygame.font.Font("freesansbold.ttf", 32)
+victory_font = pygame.font.Font("freesansbold.ttf", 50)
+
+# Colour variables
+white = (255, 255, 255)
+
 screen = pygame.display.set_mode((width, height))
 
+# Title
 pygame.display.set_caption("Pong")
 
+# Object variables
 paddle_height = 60
-y = height/2
-y2 = height/2
+y = y2 = y3 = height/2
 
 x = width/2
-y3 = height/2
 
+# Objects
 player1 = pygame.Rect((50, y, 10, paddle_height))
 player2 = pygame.Rect((750, y2, 10, paddle_height))
 ball = pygame.Rect(x, y3, 10, 10)
@@ -35,9 +44,6 @@ class Scoreboard:
 	def __str__(self):
 		return f"{self.player_score} - {self.computer_score}"
 
-game_font = pygame.font.Font("freesansbold.ttf", 32)
-victory_font = pygame.font.Font("freesansbold.ttf", 50)
-
 def movement():
 	if key[pygame.K_w] == True and player1.y > 0:
 		player1.move_ip(0, -1)
@@ -52,27 +58,27 @@ godown = False
 ballgoright = False
 ballgoup = True
 
-clock = pygame.time.Clock()
-
-run = True
-while run:
+while True:
 
 	pygame.time.delay(7)
 
 	screen.fill((0, 0, 0))
 
-	pygame.draw.rect(screen, (255, 255, 255), player1)
-	pygame.draw.rect(screen, (255, 255, 255), player2)
-	pygame.draw.rect(screen, (255, 255, 255), ball)
+	# Display objects
+	pygame.draw.rect(screen, white, player1)
+	pygame.draw.rect(screen, white, player2)
+	pygame.draw.rect(screen, white, ball)
 
+	# Display score
 	score_text = game_font.render(f"{score}", False, (255, 255, 255))
 	screen.blit(score_text, (367, 50))
 
 	key = pygame.key.get_pressed()
-	restart = False
 
+	# Human paddle controls
 	movement()
-    
+
+	# Computer paddle controls
 	if godown == False:
 		player2.move_ip(0, -1)
 		y2 -= 1
@@ -85,6 +91,7 @@ while run:
 		if player2.y == height - paddle_height:
 			godown = False
 
+	# Ball movement
 	if ballgoright == False:
 		ball.move_ip(-1, 0)
 	elif ballgoright:
@@ -101,6 +108,7 @@ while run:
 		if ball.y == 0:
 			ballgoup = False
 
+	# Collision physics
 	if ball.colliderect(player1):
 		if key[pygame.K_s] == True:
 			ballgoup = False
@@ -121,6 +129,7 @@ while run:
 		else:
 			ballgoright = False
 
+	# Out-of-bounds check
 	if ball.x <= 0:
 		ball.x = width/2
 		ball.y = height/2
@@ -136,6 +145,7 @@ while run:
 		ballgoup = True
 		score.playerPoint()
 
+	# Game completed messages
 	if (int(f"{score}"[0]) == 7):
 		victory_text = victory_font.render("Player 1 Wins!", False, (255, 255, 255))
 		screen.blit(victory_text, (225, 200))
@@ -151,8 +161,6 @@ while run:
 		
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			run = False
+			pygame.quit()
 			
 	pygame.display.update()
-
-pygame.quit()
