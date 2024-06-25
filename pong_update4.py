@@ -38,6 +38,14 @@ class Scoreboard:
 game_font = pygame.font.Font("freesansbold.ttf", 32)
 victory_font = pygame.font.Font("freesansbold.ttf", 50)
 
+def movement():
+	if key[pygame.K_w] == True and player1.y > 0:
+		player1.move_ip(0, -1)
+		player1.y -= 1
+	elif key[pygame.K_s] == True and player1.y < (height - paddle_height):
+		player1.move_ip(0, 1)
+		player1.y += 1
+
 score = Scoreboard(0, 0)
 
 godown = False
@@ -49,7 +57,7 @@ clock = pygame.time.Clock()
 run = True
 while run:
 
-	pygame.time.delay(1)
+	pygame.time.delay(7)
 
 	screen.fill((0, 0, 0))
 
@@ -61,13 +69,9 @@ while run:
 	screen.blit(score_text, (367, 50))
 
 	key = pygame.key.get_pressed()
+	restart = False
 
-	if key[pygame.K_w] == True and player1.y > 0:
-		player1.move_ip(0, -1)
-		y -= 1
-	elif key[pygame.K_s] == True and player1.y < (height - paddle_height):
-		player1.move_ip(0, 1)
-		y += 1
+	movement()
     
 	if godown == False:
 		player2.move_ip(0, -1)
@@ -83,7 +87,6 @@ while run:
 
 	if ballgoright == False:
 		ball.move_ip(-1, 0)
-		x -= 1
 	elif ballgoright:
 		ball.move_ip(1, 0)
 	
@@ -126,40 +129,30 @@ while run:
 		score.computerPoint()
 		pygame.display.update()
 
-	elif ball.x >= 800:
+	elif ball.x >= 790:
 		ball.x = width/2
 		ball.y = height/2
 		ballgoright = False
 		ballgoup = True
 		score.playerPoint()
 
-
 	if (int(f"{score}"[0]) == 7):
 		victory_text = victory_font.render("Player 1 Wins!", False, (255, 255, 255))
-		screen.blit(victory_text, (367, 200))
+		screen.blit(victory_text, (225, 200))
 		pygame.display.update()
-		#pygame.time.delay(5000)
-		for i in range(6):
-			screen.fill((0, 0, 0))
-			timer = game_font.render("game closes in " + str(5-i), False, (255, 255, 255))
-			screen.blit(timer, (300, 400))
-			pygame.time.delay(1000)
-			pygame.display.update()
-
+		pygame.time.delay(3000)
 		run = False
 	elif (int(f"{score}"[4]) == 7):
 		victory_text = victory_font.render("Player 2 Wins!", False, (255, 255, 255))
-		screen.blit(victory_text, (367, 200))
-		pygame.time.delay(5000)
+		screen.blit(victory_text, (225, 210))
+		pygame.display.update()
+		pygame.time.delay(3000)
 		run = False
 		
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-
 			run = False
-	
-	#clock.tick(60)
-
+			
 	pygame.display.update()
 
 pygame.quit()
