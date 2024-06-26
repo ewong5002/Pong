@@ -1,2 +1,2 @@
 # Pong
-Pong game using Pygame
+Recreation of Pong using Pygame
