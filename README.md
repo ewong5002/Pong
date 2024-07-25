@@ -1,2 +1,2 @@
 # Pong
-Recreation of Pong using Pygame
+Download Pong_final.py to start playing.
